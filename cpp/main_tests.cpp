@@ -140,6 +140,52 @@ void testKosarajuSCC()
     assert(scc.size() == 2 && "Graph should have exactly 2 SCCs");
 }
 
+void testAStar()
+{
+    TestGraph g;
+    auto nA = g.addNode("A"); auto nB = g.addNode("B"); auto nC = g.addNode("C");
+
+    g.addArc(nA, nB, 1.0); g.addArc(nB, nC, 2.0); g.addArc(nA, nC, 10.0);
+
+    auto heuristic = [](TestGraph::NodePtr n) -> double { return 0.0; }; 
+    auto path = AStar<TestGraph>::findPath(g, nA, nC, heuristic);
+
+    assert(path.size() == 3);
+    assert(path[1] == nB);
+}
+
+void testBellmanFord()
+{
+    TestGraph g;
+    auto n1 = g.addNode("1"); auto n2 = g.addNode("2"); auto n3 = g.addNode("3");
+
+    g.addArc(n1, n2, 4.0); g.addArc(n2, n3, -2.0); g.addArc(n1, n3, 5.0);
+
+    auto spt = BellmanFord<TestGraph>::getMinimumPathsTree(g, n1);
+    assert(spt.getArcs().size() == 2);
+
+    g.addArc(n3, n2, -5.0); // Create negative cycle
+    bool caught = false;
+    try { BellmanFord<TestGraph>::getMinimumPathsTree(g, n1); }
+    catch (const std::exception&) { caught = true; }
+
+    assert(caught && "Should detect negative cycle");
+}
+
+void testPrimKruskal()
+{
+    UndirectedTestGraph g;
+    auto nA = g.addNode("A"); auto nB = g.addNode("B"); auto nC = g.addNode("C");
+
+    g.addArc(nA, nB, 1.0); g.addArc(nB, nC, 2.0); g.addArc(nA, nC, 3.0);
+
+    auto mst_prim = Prim<UndirectedTestGraph>::getMinimumSpanningTree(g, nA);
+    auto mst_kruskal = Kruskal<UndirectedTestGraph>::getMinimumSpanningTree(g);
+
+    assert(mst_prim.getArcs().size() == 2);
+    assert(mst_kruskal.getArcs().size() == 2);
+}
+
 int main()
 {
     std::cout << "==========================================\n";
@@ -160,6 +206,9 @@ int main()
 
     runTest("Dijkstra's Algorithm", testDijkstra);
     runTest("Kosaraju's SCC Algorithm", testKosarajuSCC);
+    runTest("A* Algorithm", testAStar);
+    runTest("Bellman-Ford Algorithm", testBellmanFord);
+    runTest("Prim's Algorithm", testPrimKruskal);
 
     std::cout << "\n==========================================\n";
     return 0;

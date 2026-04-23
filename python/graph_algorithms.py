@@ -8,6 +8,53 @@ NodeType = TypeVar('NodeType')
 WeightType = TypeVar('WeightType')
 GraphType = TypeVar('GraphType', bound=Graph)
 
+class AStar:
+    """Implements the A* (A-Star) search algorithm."""
+
+    @staticmethod
+    def find_path(graph: GraphType, start: Node[NodeType], goal: Node[NodeType], heuristic: Callable[[Node[NodeType]], float]) -> List[Node[NodeType]]:
+        """
+        Finds the shortest path using a heuristic function.
+        """
+        if start not in graph or goal not in graph:
+            raise ValueError("Start or Goal node not in graph.")
+
+        # TODO: Implement A* search algorithm using Python's heapq.
+        # HINT: Maintain a g_score (actual cost) and f_score (estimated total cost) for each node.
+        raise NotImplementedError("AStar.find_path is not implemented yet!")
+
+class BellmanFord:
+    """Implements the Bellman-Ford algorithm for negative weights detection."""
+
+    @staticmethod
+    def get_minimum_paths_tree(graph: GraphType, source: Node[NodeType]) -> GraphType:
+        """
+        Computes the Shortest Paths Tree, detecting negative cycles.
+        Raises RuntimeError if a negative cycle is detected.
+        """
+        if source not in graph: raise ValueError("Source node not in graph.")
+
+        # TODO: Implement Bellman-Ford to find shortest paths and detect negative cycles.
+        # HINT: Relax all edges |V| - 1 times. A final relaxation pass should detect cycles.
+        raise NotImplementedError("BellmanFord.get_minimum_paths_tree is not implemented yet!")
+
+class Prim:
+    """Implements Prim's Algorithm for Minimum Spanning Trees."""
+
+    @staticmethod
+    def get_minimum_spanning_tree(graph: GraphType, start: Node[NodeType]) -> GraphType:
+        # TODO: Implement Prim's algorithm using heapq.
+        # HINT: Keep track of nodes already included in the MST to avoid cycles.
+        raise NotImplementedError("Prim.get_minimum_spanning_tree is not implemented yet!")
+
+class Kruskal:
+    """Implements Kruskal's Algorithm for Minimum Spanning Trees."""
+
+    @staticmethod
+    def get_minimum_spanning_tree(graph: GraphType) -> GraphType:
+        # TODO: Implement Kruskal's algorithm.
+        # HINT: Sort all edges by weight. You will need to implement a Disjoint Set (Union-Find) helper.
+        raise NotImplementedError("Kruskal.get_minimum_spanning_tree is not implemented yet!")
 
 class Dijkstra:
     """Implements Dijkstra's algorithm for finding shortest paths in weighted graphs."""

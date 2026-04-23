@@ -184,6 +184,54 @@ fn test_kosaraju_scc() {
     assert_eq!(scc.len(), 2, "Graph should have exactly 2 SCCs");
 }
 
+fn test_a_star() {
+    let mut g = TestGraph::new();
+    let n_a = g.add_node_by_value("A".to_string());
+    let n_b = g.add_node_by_value("B".to_string());
+    let n_c = g.add_node_by_value("C".to_string());
+
+    g.add_arc(n_a.clone(), n_b.clone(), 1.0);
+    g.add_arc(n_b.clone(), n_c.clone(), 2.0);
+    g.add_arc(n_a.clone(), n_c.clone(), 10.0);
+
+    let path = graph_algorithms::AStar::find_path(&g, n_a.clone(), n_c.clone(), |_| 0.0);
+    assert_eq!(path.len(), 3);
+}
+
+fn test_bellman_ford() {
+    let mut g = TestGraph::new();
+    let n1 = g.add_node_by_value("1".to_string());
+    let n2 = g.add_node_by_value("2".to_string());
+    let n3 = g.add_node_by_value("3".to_string());
+
+    g.add_arc(n1.clone(), n2.clone(), 4.0);
+    g.add_arc(n2.clone(), n3.clone(), -2.0);
+    g.add_arc(n1.clone(), n3.clone(), 5.0);
+
+    let spt = graph_algorithms::BellmanFord::get_minimum_paths_tree(&g, n1.clone()).unwrap();
+    assert_eq!(spt.get_arcs().len(), 2);
+
+    g.add_arc(n3.clone(), n2.clone(), -5.0);
+    assert!(graph_algorithms::BellmanFord::get_minimum_paths_tree(&g, n1.clone()).is_err());
+}
+
+fn test_prim_kruskal() {
+    let mut g = UndirectedTestGraph::new();
+    let n_a = g.add_node_by_value("A".to_string());
+    let n_b = g.add_node_by_value("B".to_string());
+    let n_c = g.add_node_by_value("C".to_string());
+
+    g.add_arc(n_a.clone(), n_b.clone(), 1.0);
+    g.add_arc(n_b.clone(), n_c.clone(), 2.0);
+    g.add_arc(n_a.clone(), n_c.clone(), 3.0);
+
+    let mst_p = graph_algorithms::Prim::get_minimum_spanning_tree(&g, n_a.clone());
+    let mst_k = graph_algorithms::Kruskal::get_minimum_spanning_tree(&g);
+
+    assert_eq!(mst_p.get_arcs().len(), 2);
+    assert_eq!(mst_k.get_arcs().len(), 2);
+}
+
 fn main() {
     println!("==========================================");
     println!("   GRAPH LIBRARY - STUDENT AUTOGRADER     ");
@@ -203,6 +251,9 @@ fn main() {
 
     run_test("Dijkstra's Algorithm", test_dijkstra);
     run_test("Kosaraju's SCC", test_kosaraju_scc);
+    run_test("A* Algorithm", test_a_star);
+    run_test("Bellman-Ford Algorithm", test_bellman_ford);
+    run_test("Prim's Algorithm", test_prim_kruskal);
 
     println!("\n==========================================");
 }
