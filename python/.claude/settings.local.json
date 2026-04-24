@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:UsersjesusOneDriveDocumentsayda_graph_A2026 -not -path */.git/* -type d)",
+      "Bash(python ejercicios_examen.py)",
+      "Bash(python ejercicios_examen_soluciones.py)"
+    ]
+  }
+}

@@ -1,6 +1,8 @@
 import heapq
 from collections import deque
+import queue
 from typing import TypeVar, Dict, List, Set, Callable, Optional, Tuple
+from unittest import result
 
 from graph import Graph, Node, Arc
 
@@ -49,33 +51,95 @@ class GraphTraversals:
         """
         if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
         if start not in graph: raise ValueError("Source node not in graph.")
+        
+        visited = set() # visited nodes
+        q = deque([start]) 
 
-        # TODO: Implement BFS using collections.deque
+        while q:
+            u = q.popleft()
+            if u in visited:
+                continue
+            visited.add(u)
+            op(u)
+
+            for arc in graph.get_outgoing_arcs(u):
+                v = arc.target
+                if v not in visited:
+                    q.append(v)
+
+
         # HINT: Use graph.get_outgoing_arcs() and call op(current_node) when processed.
-        raise NotImplementedError("traverse_bfs is not implemented yet!")
+        # raise NotImplementedError("traverse_bfs is not implemented yet!")
 
     @staticmethod
     def find_shortest_path_bfs(graph: GraphType, start: Node[NodeType], end: Node[NodeType]) -> List[Node[NodeType]]:
         """
         Finds the shortest path between two nodes in an unweighted graph using BFS.
         """
+        
         if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
         if start not in graph or end not in graph: raise ValueError("Start or End node not in graph.")
 
+        q = deque([start])
+        visited = set()
+        predecessors = {start: None}
+
+        while q:
+            current_node = q.popleft()
+            if current_node == end:
+                break
+            visited.add(current_node)
+
+            for arc in graph.get_outgoing_arcs(current_node):
+                neighbor = arc.target
+                if neighbor not in visited and neighbor not in predecessors:
+                    predecessors[neighbor] = current_node
+                    q.append(neighbor)
+
+        else:
+            return []
+        
+        path = []
+
+        while end is not None:
+            path.append(end)
+            end = predecessors[end]
+        
+        return path[::-1]
+    
+
+
         # TODO: Implement shortest path finding using BFS and a predecessors tracking dictionary.
-        raise NotImplementedError("find_shortest_path_bfs is not implemented yet!")
+        #raise NotImplementedError("find_shortest_path_bfs is not implemented yet!")
 
     @staticmethod
     def traverse_dfs(graph: GraphType, start: Node[NodeType], op: Callable[[Node[NodeType]], None]) -> None:
         """
         Performs a Depth-First Search traversal starting from a node.
         """
+
+        
         if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
         if start not in graph: raise ValueError("Source node not in graph.")
+        
+        visited = set()
+        stack = [start]
+
+        while stack:
+            current_node = stack.pop()
+            if current_node in visited:
+                continue
+            visited.add(current_node)
+            op(current_node)
+
+            for arc in graph.get_outgoing_arcs(current_node):
+                neighbor = arc.target
+                if neighbor not in visited:
+                    stack.append(neighbor)
 
         # TODO: Implement DFS. (Hint: Create a private recursive helper method `_dfs_recursive`).
         # HINT: Use graph.get_outgoing_arcs() and call op(current_node) when processed.
-        raise NotImplementedError("traverse_dfs is not implemented yet!")
+        #raise NotImplementedError("traverse_dfs is not implemented yet!")
 
     @staticmethod
     def build_spanning_tree_dfs(graph: GraphType, start: Node[NodeType]) -> GraphType:
@@ -83,18 +147,74 @@ class GraphTraversals:
         if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
         if start not in graph: raise ValueError("Source node not in graph.")
 
+        tree = type(graph)()  # Create a new graph to hold the spanning tree
+        visited = set()
+        stack = [start]
+
+        node_mapping = {}  # Maps original nodes to their counterparts in the spanning tree
+        node_mapping[start] = tree.add_node_by_value(start.value)  # Add the start node to the spanning tree
+
+        while stack:
+                current_node = stack.pop()
+
+                if current_node in visited:
+                    continue
+
+                visited.add(current_node)
+
+                for arc in graph.get_outgoing_arcs(current_node):
+                    neighbor = arc.target
+
+                    if neighbor not in visited:
+                        stack.append(neighbor)
+
+                    # crear nodo si no existe en el árbol
+                        if neighbor not in node_mapping:
+                            node_mapping[neighbor] = tree.add_node_by_value(neighbor.value)
+
+                     # usar el mapping (ESTA es la clave)
+                        tree.add_arc(node_mapping[current_node],node_mapping[neighbor],arc.get_weight())  # Add the arc to the spanning tree
+        return tree
         # TODO: Traverse the graph using DFS and build a new GraphType.
-        raise NotImplementedError("build_spanning_tree_dfs is not implemented yet!")
+        #raise NotImplementedError("build_spanning_tree_dfs is not implemented yet!")
 
-    @staticmethod
-    def build_spanning_tree_bfs(graph: GraphType, start: Node[NodeType]) -> GraphType:
-        """Builds a spanning tree using Breadth-First Search traversal."""
-        if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
-        if start not in graph: raise ValueError("Source node not in graph.")
 
-        # TODO: Traverse the graph using BFS and build a new GraphType.
-        raise NotImplementedError("build_spanning_tree_bfs is not implemented yet!")
+@staticmethod
+def build_spanning_tree_bfs(graph: GraphType, start: Node[NodeType]) -> GraphType:
+    if not isinstance(graph, Graph):
+        raise TypeError("Expected a Graph instance.")
+    if start not in graph:
+        raise ValueError("Source node not in graph.")
 
+    tree = type(graph)()
+    visited = set()
+    queue = deque([start])
+
+    node_mapping = {}
+    node_mapping[start] = tree.add_node_by_value(start.value)
+
+    visited.add(start)
+
+    while queue:
+        current_node = queue.popleft()
+
+        for arc in graph.get_outgoing_arcs(current_node):
+            neighbor = arc.target
+
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+                if neighbor not in node_mapping:
+                    node_mapping[neighbor] = tree.add_node_by_value(neighbor.value)
+
+                tree.add_arc(
+                    node_mapping[current_node],
+                    node_mapping[neighbor],
+                    arc.get_weight()
+                )
+
+    return tree
 
 class GraphProperties:
     """Analyzes graph properties such as cycles, connected components, and dependencies."""
@@ -136,23 +256,77 @@ class GraphTopological:
     """Provides topological sorting and ranking for directed acyclic graphs (DAGs)."""
 
     @staticmethod
-    def get_sort(graph: GraphType) -> List[Node[NodeType]]:
-        """
-        Computes a topological ordering of the graph's nodes.
-        Raises a RuntimeError if the graph contains a cycle.
-        """
-        if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
+    def get_sort(graph):
+        if not isinstance(graph, Graph):
+            raise TypeError("Expected a Graph instance.")
 
-        # TODO: Implement Topological Sort (Kahn's Algorithm).
-        raise NotImplementedError("get_sort is not implemented yet!")
+        in_degree = {}
+        q = deque()
+        result = []
+
+        for node in graph:
+            in_degree[node] = graph.get_in_degree(node)
+
+        for node in graph:
+            if in_degree[node] == 0:
+                q.append(node)
+
+        while q:
+            current_node = q.popleft()
+            result.append(current_node)
+
+            for arc in graph.get_outgoing_arcs(current_node):
+                neighbor = arc.target
+                in_degree[neighbor] -= 1
+
+                if in_degree[neighbor] == 0:
+                    q.append(neighbor)
+                
+        if len(result) != len(graph):
+                raise RuntimeError("Graph has a cycle.")
+
+        return result
 
     @staticmethod
     def get_ranks(graph: GraphType) -> Dict[Node[NodeType], int]:
-        """
-        Computes topological ranks (depth levels) for each node.
-        Raises a RuntimeError if the graph contains a cycle.
-        """
-        if not isinstance(graph, Graph): raise TypeError("Expected a Graph instance.")
+    
+        if not isinstance(graph, Graph):
+            raise TypeError("Expected a Graph instance.")
+    
+        rank = {}
+        q = deque()
+        in_degree = {}
 
-        # TODO: Compute depth ranks based on dependencies.
-        raise NotImplementedError("get_ranks is not implemented yet!")
+        # get indegree for every node
+        for node in graph:
+            in_degree[node] = graph.get_in_degree(node)
+
+        # get rank zero
+        for node in graph:
+            if in_degree[node] == 0:
+                q.append(node)
+                rank[node] = 0
+
+        # kahn
+        while q:
+            current_node = q.popleft()
+
+            for arc in graph.get_outgoing_arcs(current_node):
+                neighbor = arc.target
+                in_degree[neighbor] -= 1 # substract current node indegree
+
+                if neighbor not in rank:
+                    rank[neighbor] = rank[current_node] + 1
+
+                else:
+                    rank[neighbor] = max(rank[current_node], rank[neighbor] +1)
+
+                if in_degree[neighbor] == 0:
+                    q.append(neighbor)
+
+        
+        # Detección de ciclo
+        if len(rank) != len(graph):
+            raise RuntimeError("Graph has a cycle.")
+
+        return rank
