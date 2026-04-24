@@ -12,6 +12,112 @@ namespace graph_lib
 {
 
 /**
+ * @brief Implements the A* (A-Star) search algorithm.
+ *
+ * @tparam GraphType The graph type.
+ */
+template <typename GraphType>
+class AStar
+{
+public:
+    using NodeType = typename GraphType::NodeValueType;
+    using WeightType = typename GraphType::ArcWeightType;
+    using NodePtr = std::shared_ptr<Node<NodeType>>;
+
+    /**
+     * @brief Finds the shortest path using a heuristic function.
+     *
+     * @param graph The graph to search.
+     * @param start The source node.
+     * @param goal The target node.
+     * @param heuristic A function evaluating estimated cost from a node to the goal.
+     * @return std::vector<NodePtr> The path from start to goal. Empty if no path exists.
+     */
+    static std::vector<NodePtr> findPath(
+        const GraphType& graph,
+        NodePtr start,
+        NodePtr goal,
+        std::function<WeightType(NodePtr)> heuristic)
+    {
+        static_assert(!std::is_same_v<WeightType, void>, "A* requires a weighted graph.");
+
+        // TODO: Implement A* search algorithm using a priority queue (Min-Heap).
+        // HINT: Maintain a g_score (actual cost) and f_score (estimated total cost) for each node.
+        throw std::logic_error("findPath is not implemented yet!");
+    }
+};
+
+/**
+ * @brief Implements the Bellman-Ford algorithm for shortest paths with negative weights.
+ */
+template <typename GraphType>
+class BellmanFord
+{
+public:
+    using NodeType = typename GraphType::NodeValueType;
+    using WeightType = typename GraphType::ArcWeightType;
+    using NodePtr = std::shared_ptr<Node<NodeType>>;
+
+    /**
+     * @brief Computes the Shortest Paths Tree, detecting negative cycles.
+     *
+     * @param graph The graph to analyze.
+     * @param source The starting node.
+     * @return GraphType The shortest paths tree.
+     * @throws std::runtime_error If a negative weight cycle is detected.
+     */
+    static GraphType getMinimumPathsTree(const GraphType& graph, NodePtr source)
+    {
+        static_assert(!std::is_same_v<WeightType, void>, "Bellman-Ford requires a weighted graph.");
+
+        // TODO: Implement Bellman-Ford to find shortest paths and detect negative cycles.
+        // HINT: Relax all edges |V| - 1 times. A final relaxation pass should detect cycles.
+        throw std::logic_error("getMinimumPathsTree is not implemented yet!");
+    }
+};
+
+/**
+ * @brief Implements Prim's Algorithm for Minimum Spanning Trees (MST).
+ */
+template <typename GraphType>
+class Prim
+{
+public:
+    using NodeType = typename GraphType::NodeValueType;
+    using WeightType = typename GraphType::ArcWeightType;
+    using NodePtr = std::shared_ptr<Node<NodeType>>;
+
+    /**
+     * @brief Builds an MST starting from an arbitrary node.
+     */
+    static GraphType getMinimumSpanningTree(const GraphType& graph, NodePtr start)
+    {
+        // TODO: Implement Prim's algorithm using a priority queue.
+        // HINT: Keep track of nodes already included in the MST to avoid cycles.
+        throw std::logic_error("getMinimumSpanningTree (Prim) is not implemented yet!");
+    }
+};
+
+/**
+ * @brief Implements Kruskal's Algorithm for Minimum Spanning Trees (MST).
+ */
+template <typename GraphType>
+class Kruskal
+{
+public:
+    using NodeType = typename GraphType::NodeValueType;
+    using WeightType = typename GraphType::ArcWeightType;
+    using NodePtr = std::shared_ptr<Node<NodeType>>;
+
+    static GraphType getMinimumSpanningTree(const GraphType& graph)
+    {
+        // TODO: Implement Kruskal's algorithm.
+        // HINT: Sort all edges by weight. You will need a Disjoint Set (Union-Find) structure.
+        throw std::logic_error("getMinimumSpanningTree (Kruskal) is not implemented yet!");
+    }
+};
+
+/**
  * @brief Implements Dijkstra's algorithm for finding shortest paths in weighted graphs.
  * @note The graph must have non-negative weights.
  */

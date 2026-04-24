@@ -8,6 +8,72 @@ use std::collections::{HashMap, HashSet, VecDeque, BinaryHeap};
 use std::rc::Rc;
 use std::cmp::Ordering;
 
+pub struct AStar;
+
+impl AStar {
+    /// Finds the shortest path using a heuristic function.
+    pub fn find_path<N, W, H>(
+        graph: &DirectedGraph<N, W>,
+        start: Rc<Node<N>>,
+        goal: Rc<Node<N>>,
+        heuristic: H,
+    ) -> Vec<Rc<Node<N>>>
+    where
+        N: Clone + std::cmp::Eq + std::hash::Hash,
+        W: Clone + Copy + Default + std::ops::Add<Output = W> + PartialOrd + 'static,
+        H: Fn(&Rc<Node<N>>) -> W,
+    {
+        // TODO: Implement A* search algorithm using std::collections::BinaryHeap.
+        // HINT: Maintain a HashMap for g_score and f_score.
+        unimplemented!("AStar::find_path is not implemented yet!");
+    }
+}
+
+pub struct BellmanFord;
+
+impl BellmanFord {
+    /// Computes the Shortest Paths Tree, detecting negative cycles.
+    /// Returns Err if a negative weight cycle is detected.
+    pub fn get_minimum_paths_tree<N, W>(graph: &DirectedGraph<N, W>, source: Rc<Node<N>>) -> Result<DirectedGraph<N, W>, &'static str>
+    where
+        N: Clone + std::cmp::Eq + std::hash::Hash,
+        W: Clone + Copy + Default + std::ops::Add<Output = W> + PartialOrd + 'static,
+    {
+        // TODO: Implement Bellman-Ford to find shortest paths and detect negative cycles.
+        unimplemented!("BellmanFord::get_minimum_paths_tree is not implemented yet!");
+    }
+}
+
+pub struct Prim;
+
+impl Prim {
+    /// Builds an MST starting from an arbitrary node.
+    pub fn get_minimum_spanning_tree<N, W>(graph: &UndirectedGraph<N, W>, start: Rc<Node<N>>) -> UndirectedGraph<N, W>
+    where
+        N: Clone + std::cmp::Eq + std::hash::Hash,
+        W: Clone + Copy + Default + PartialOrd + 'static,
+    {
+        // TODO: Implement Prim's algorithm.
+        // HINT: Use BinaryHeap. Remember Rust's BinaryHeap is a Max-Heap by default, you may need to wrap weights in a Reverse or custom struct.
+        unimplemented!("Prim::get_minimum_spanning_tree is not implemented yet!");
+    }
+}
+
+pub struct Kruskal;
+
+impl Kruskal {
+    /// Builds an MST processing edges by weight.
+    pub fn get_minimum_spanning_tree<N, W>(graph: &UndirectedGraph<N, W>) -> UndirectedGraph<N, W>
+    where
+        N: Clone + std::cmp::Eq + std::hash::Hash,
+        W: Clone + Copy + PartialOrd + 'static,
+    {
+        // TODO: Implement Kruskal's algorithm.
+        // HINT: Sort edges and implement a Disjoint Set (Union-Find) pattern.
+        unimplemented!("Kruskal::get_minimum_spanning_tree is not implemented yet!");
+    }
+}
+
 /// Implements Dijkstra's algorithm for finding shortest paths in weighted graphs.
 ///
 /// @note The graph must have non-negative weights.

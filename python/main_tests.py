@@ -1,6 +1,6 @@
 import sys
 from graph import DirectedGraph, UndirectedGraph
-from graph_algorithms import Dijkstra, GraphTraversals, GraphProperties, GraphTopological
+from graph_algorithms import Dijkstra, GraphTraversals, GraphProperties, GraphTopological, Prim, Kruskal, AStar, BellmanFord
 
 def run_test(test_name: str, test_func: callable) -> None:
     """Helper function to safely run tests and catch NotImplemented errors."""
@@ -119,6 +119,41 @@ def test_kosaraju_scc() -> None:
     scc = GraphProperties.compute_strongly_connected_components(g)
     assert len(scc) == 2, "Graph should have exactly 2 SCCs"
 
+def test_a_star() -> None:
+    g = DirectedGraph()
+    na, nb, nc = g.add_node_by_value("A"), g.add_node_by_value("B"), g.add_node_by_value("C")
+    g.add_arc(na, nb, 1.0); g.add_arc(nb, nc, 2.0); g.add_arc(na, nc, 10.0)
+
+    path = AStar.find_path(g, na, nc, lambda n: 0.0)
+    assert len(path) == 3
+    assert path[1] == nb
+
+def test_bellman_ford() -> None:
+    g = DirectedGraph()
+    n1, n2, n3 = g.add_node_by_value("1"), g.add_node_by_value("2"), g.add_node_by_value("3")
+    g.add_arc(n1, n2, 4.0); g.add_arc(n2, n3, -2.0); g.add_arc(n1, n3, 5.0)
+
+    spt = BellmanFord.get_minimum_paths_tree(g, n1)
+    assert len(spt.arcs) == 2
+
+    g.add_arc(n3, n2, -5.0)
+    caught = False
+    try:
+        BellmanFord.get_minimum_paths_tree(g, n1)
+    except RuntimeError:
+        caught = True
+    assert caught, "Should detect negative cycle"
+
+def test_prim_kruskal() -> None:
+    g = UndirectedGraph()
+    na, nb, nc = g.add_node_by_value("A"), g.add_node_by_value("B"), g.add_node_by_value("C")
+    g.add_arc(na, nb, 1.0); g.add_arc(nb, nc, 2.0); g.add_arc(na, nc, 3.0)
+
+    mst_p = Prim.get_minimum_spanning_tree(g, na)
+    mst_k = Kruskal.get_minimum_spanning_tree(g)
+
+    assert len(mst_p.arcs) == 2 and len(mst_k.arcs) == 2
+
 def main() -> None:
     print("==========================================")
     print("   GRAPH LIBRARY - STUDENT AUTOGRADER     ")
@@ -138,6 +173,9 @@ def main() -> None:
 
     run_test("Dijkstra's Algorithm", test_dijkstra)
     run_test("Kosaraju's SCC Algorithm", test_kosaraju_scc)
+    run_test("A* Algorithm", test_a_star)
+    run_test("Bellman-Ford Algorithm", test_bellman_ford)
+    run_test("Prim's & Kruskal's Algorithms", test_prim_kruskal)
 
     print("\n==========================================")
 
